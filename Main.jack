@@ -1,0 +1,29 @@
+// -------------------------------------------------------------------------------
+// Project     : CS2000, TowerDefense Project
+// File Name   : Main.jack
+// Class       : CS2020, AY16-Q1
+// Date        : 9/9/2015
+// Author      : Micah Akin and Paul Haagenson
+// Version     : v1.0
+// Environment : TextWrangler 4.5.12 (3398)
+// Copyright   : This work was done by employees of the U.S. Government
+//               and is in the public domain.
+// -------------------------------------------------------------------------------
+
+/**
+ * The Main class initializes a new game and starts it.
+ */
+class Main {
+
+    /** Initializes a new game and starts it. */    
+    function void main() {
+        var TowerDefenseGame game;
+        
+        let game = TowerDefenseGame.new();
+        do game.run();
+        do game.dispose(); 
+
+
+        return;
+    }
+}

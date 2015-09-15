@@ -1,0 +1,127 @@
+// -------------------------------------------------------------------------------
+// Project     : CS2000, TowerDefense Project
+// File Name   : Enemy.jack
+// Class       : CS2020, AY16-Q1
+// Date        : 9/9/2015
+// Author      : Micah Akin and Paul Haagenson
+// Version     : v1.0
+// Environment : TextWrangler 4.5.12 (3398)
+// Copyright   : This work was done by employees of the U.S. Government
+//               and is in the public domain.
+// -------------------------------------------------------------------------------
+
+/**
+ * Implements a enemy. A enemy has a screen location
+ * and a radius. It also has methods for drawing, erasing, moving on the 
+ * screen, and changing its radius.
+ */
+class Enemy {
+
+    // Location on the screen
+    field int x, y;
+
+    // The radius of the enemy
+    field int radius, size;
+
+    /** Constructs a new enemy with a given location and radius. */
+    constructor Enemy new(int Ax, int Ay, int Asize) {
+        let x = Ax;
+        let y = Ay;
+        let radius = Asize/2;
+        let size = Asize;
+
+        do draw();
+
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Draws the enemy on the screen. */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawCircle(x + radius, y + radius, radius);
+        
+        
+        
+        do Output.printString("x:");
+        do Output.printInt(x + radius);
+        do Output.printString("y:");
+        do Output.printInt(y + radius);
+        do Output.printString("r:");
+        do Output.printInt(radius);
+        do Output.println();
+        return;
+    }
+
+    /** Erases the enemy from the screen. */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawCircle(x + radius, y + radius, radius);
+        return;
+    }
+
+    // /** Increments the radius by 2 pixels. */
+    // method void incSize() {
+    //    if (((y + radius) < 254) & ((x + radius) < 510)) {
+    //        do erase();
+    //        let radius = radius + 2;
+    //        do draw();
+    //    }
+    //    return;
+    // }
+
+    // /** Decrements the radius by 2 pixels. */
+    // method void decSize() {
+    //    if (radius > 2) {
+    //        do erase();
+    //        let radius = radius - 2;
+    //        do draw();
+    //    }
+    //    return;
+	// }
+
+    /** Moves up by 2 pixels. */
+    method void moveUp() {
+        if (y > radius) {
+            do erase();
+            let y = y - size;
+            do draw();
+        }
+        return;
+    }
+
+    /** Moves down by 2 pixels. */
+    method void moveDown() {
+        if ((y + size) < 254) {
+            do erase();
+            let y = y + size;
+            do draw();
+        }
+        return;
+    }
+
+    /** Moves left by 2 pixels. */
+    method void moveLeft() {
+        if (x > radius) {
+            do erase();
+            let x = x - size;
+            do draw();
+        }
+        return;
+    }
+
+    /** Moves right by 1 square. */
+    method void moveRight() {
+        if ((x + size) < 510) {
+            do erase();
+            let x = x + size;
+            do draw();
+        }
+        return;
+    }
+}

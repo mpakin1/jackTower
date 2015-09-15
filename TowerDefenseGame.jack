@@ -1,0 +1,141 @@
+// -------------------------------------------------------------------------------
+// Project     : CS2000, TowerDefense Project
+// File Name   : TowerDefenseGame.jack
+// Class       : CS2020, AY16-Q1
+// Date        : 9/9/2015
+// Author      : Micah Akin and Paul Haagenson
+// Version     : v1.0
+// Environment : TextWrangler 4.5.12 (3398)
+// Copyright   : This work was done by employees of the U.S. Government
+//               and is in the public domain.
+// -------------------------------------------------------------------------------
+
+/**
+ * Implements the Tower Defense game.
+ * In this game you can place towers on the screen and
+ * watch the waves of enemy die due to its expert placement.
+ * In the beginning, the tower is moved into position using arrow keys 
+ * when the user is satisfied with its location, the user hits enter.  
+ * The enter key places the tower and starts the first wave of enemy.
+ * Each successive wave of enemy grows in number and the quantities of 
+ * towers grows also.
+ * The 'q' key is used to quit the game.
+ */
+class TowerDefenseGame {
+
+    // The Towers
+    field Array towerArray;
+
+    // The Enemies
+    field Array enemyArray;
+
+    // The difficulty 
+    field int difficulty;  // 0=easiest
+    
+    // Board Square size
+    field int brdSqr;
+    
+    /** Construct a new TowerDefense Game **/
+    constructor TowerDefenseGame new() {
+        
+        let brdSqr = 512 / 32;
+        let difficulty = 1;
+        
+        let towerArray = Array.new(difficulty);
+        let enemyArray = Array.new(difficulty);
+        
+        let enemyArray[0] = Enemy.new(1, brdSqr*8, brdSqr);
+        let towerArray[0] = Tower.new(1, brdSqr*7, brdSqr);
+        
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        
+        //var Enemy tempEnemy;
+        //let tempEnemy = enemyArray[0];
+        //do tempEnemy.dispose();
+        do enemyArray.dispose();
+        
+        //var Tower tempTower;
+        //let tempTower = towerArray[0];
+        //do tempTower.dispose();
+        do towerArray.dispose();
+        
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Starts the game. Handles inputs from the user that control
+     *  the square's movement, direction and size. */
+    method void run() {
+        var char key;
+        var boolean exit;
+
+        let exit = false;
+
+        while (~exit) {
+            // waits for a key to be pressed.
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                do gameRound();
+            }
+
+            if (key = 81) {
+                let exit = true;
+            }
+            
+            /**
+            if (key = 90) {
+                do square.decSize();
+            }
+            if (key = 88) {
+                do square.incSize();
+            }
+            if (key = 131) {
+                let direction = 1;
+            }
+            if (key = 133) {
+                let direction = 2;
+            }
+            if (key = 130) {
+                let direction = 3;
+            }
+            if (key = 132) {
+                let direction = 4;
+            }
+            **/
+
+            // waits for the key to be released.
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                do gameRound();
+            }
+        }
+            
+        return;
+	}
+
+    /** Moves the square by 2 pixels in the current direction. */
+    method void gameRound() {
+        /** if (direction = 1) {
+            do square.moveUp();
+        }
+        if (direction = 2) {
+            do square.moveDown();
+        }
+        if (direction = 3) {
+            do square.moveLeft();
+        }
+        if (direction = 4) {
+            do square.moveRight();
+        } **/
+        var Enemy tempEnemy;
+        let tempEnemy = enemyArray[0];
+        do tempEnemy.moveRight();
+
+        do Sys.wait(5); // Delays the next movement.
+        return;
+    }
+}
