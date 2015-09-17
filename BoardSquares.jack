@@ -1,0 +1,19 @@
+// -------------------------------------------------------------------------------
+// Project     : CS2000, TowerDefense Project
+// File Name   : BoardSquares.jack
+// Class       : CS2020, AY16-Q1
+// Date        : 9/14/2015
+// Author      : Micah Akin and Paul Haagenson
+// Version     : v1.0
+// Environment : Notepad++
+// Copyright   : This work was done by employees of the U.S. Government
+//               and is in the public domain.
+// -------------------------------------------------------------------------------
+
+/**
+ * Implements the board. Takes a vertical and horizontal dimension as inputs
+ * and initiates the board. Each square has values which help in calculation later.
+ */
+class BoardSquares {
+
+    
