@@ -1,0 +1,53 @@
+// -------------------------------------------------------------------------------
+// Project     : CS2000, TowerDefense Project
+// File Name   : Coordinate.jack
+// Class       : CS2020, AY16-Q1
+// Date        : 9/9/2015
+// Author      : Micah Akin and Paul Haagenson
+// Version     : v1.0
+// Environment : TextWrangler 4.5.12 (3398)
+// Copyright   : This work was done by employees of the U.S. Government
+//               and is in the public domain.
+// -------------------------------------------------------------------------------
+
+/**
+ * The Coordinate class is for storing an X, Y coordinate to allowing it to 
+ * be easily compared.
+ */
+class Coordinate {
+    field int x, y;
+
+    /** Initializes a new Coordinate */    
+    constructor Coordinate new(int inX, int inY) {
+        let x = inX;
+        let y = inY;
+        
+        return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Compares 2 Coordinates */
+    method boolean equals(Coordinate inPos) { 
+        if ((inPos.getX() = x) & (inPos.getY() = y)) {
+            return true;
+        } else { 
+            return false;
+        }
+    }
+    
+    /** Getter for X */
+    method int getX() {
+        return x;
+    }
+    
+    /** Getter for Y */
+    method int getY() {
+        return y;
+    }
+
+}

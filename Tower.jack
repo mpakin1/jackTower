@@ -17,87 +17,69 @@
  */
 class Tower {
 
+    // Next and previous towers in linked list
+    field Tower next, prev;
+
     // Location on the screen
     field int x, y;
 
     // The size of the tower
     field int size;
 
+    // The range and damage of the tower
+    field int damage, range;
+    
+    // Tower's number
+    field int name;
+
     /** Constructs a new tower with a given location and size. */
-    constructor Tower new(int Ax, int Ay, int Asize) {
-        let x = Ax;
-        let y = Ay;
-        let size = Asize;
+    constructor Tower new(Coordinate inCrd, int inSize, int inDamage, int inRange) {
+        let next = null;
+        let prev = null;
+        let x = inCrd.getX();
+        let y = inCrd.getY();
+        let size = inSize;
+        let damage = inDamage;
+        let range = inRange;
+        let name = 0;
         
         do draw();
-        do placeTower();
 
         return this;
     }
-    
-    
-    /** Move a tower and set it in place */
-    method void placeTower() {
-        var char key;
-        var boolean place;
-
-        let place = false;
-
-        while (~place) {
-            // waits for a key to be pressed.
-            while (key = 0) {
-                let key = Keyboard.keyPressed();
-            }
-
-            if (key = 128) {
-                let place = true;
-            }
-            
-            /**
-            if (key = 90) {
-                do square.decSize();
-            }
-            if (key = 88) {
-                do square.incSize();
-            }
-            */
-            
-            // Up
-            if (key = 131) {
-                do moveUp();
-            }
-            // Down
-            if (key = 133) { 
-                do moveDown();
-            }
-            // Left
-            if (key = 130) { 
-                do moveLeft();
-            }
-            // Right
-            if (key = 132) { 
-                do moveRight();
-            }
-            
-
-            // waits for the key to be released.
-            while (~(key = 0)) {
-                let key = Keyboard.keyPressed();
-            }
-        }
-            
-        return;
-    }
-
 
     /** Deallocates the object's memory. */
     method void dispose() {
+        if (~(next = null)) {
+            do next.dispose();
+        }
         do Memory.deAlloc(this);
         return;
     }
 
+    /** Set the tower's name */
+    method void setName(int inName) {
+        let name = inName;
+        return;
+    }
+
+    /** Get the tower's name */
+    method int getName() {
+        return name;
+    }
+
     /** Draws the tower on the screen. */
     method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    /** Recursively draws all the tower on the screen. */
+    method void rDraw() {
+        if (~(next = null)){
+            do next.rDraw();
+        }
         do Screen.setColor(true);
         do Screen.drawRectangle(x, y, x + size, y + size);
         return;
@@ -110,27 +92,51 @@ class Tower {
         return;
     }
 
-    /** Increments the size by 2 pixels. */
-    method void incSize() {
-        if (((y + size) < 254) & ((x + size) < 510)) {
-            do erase();
-            let size = size + 2;
-            do draw();
+
+    /**
+     *   LINKED LIST FUNCTIONS
+     */
+    
+    /** Recursive Insert */
+    method void insert(Tower inTower) {
+        if (next = null) { 
+            let next = inTower;
+            do next.setName(name+1);
+            do next.setPrev(this);
+        } else { 
+            do next.insert(inTower);
         }
         return;
     }
-
-    /** Decrements the size by 2 pixels. */
-    method void decSize() {
-        if (size > 2) {
-            do erase();
-            let size = size - 2;
-            do draw();
-        }
+    
+    /** Setter for next */
+    method void setNext(Tower inNext) {
+        let next = inNext;
         return;
-	}
+    }
+    
+    /** Setter for prev */
+    method void setPrev(Tower inPrev) {
+        let prev = inPrev;
+        return;
+    }
+    
+    /** Getter for next */
+    method Tower getNext() {
+        return next;
+    }
+    
+    /** Getter for prev */
+    method Tower getPrev() {
+        return prev;
+    }
 
-    /** Moves up by 2 pixels. */
+
+    /**
+     *   POSITION FUNCTIONS
+     */
+
+    /** Moves up by 1 square. */
     method void moveUp() {
         if ((y - size) > 1) {
             do erase();
@@ -140,7 +146,7 @@ class Tower {
         return;
     }
 
-    /** Moves down by 2 pixels. */
+    /** Moves down by 1 square. */
     method void moveDown() {
         if ((y + size + size) < 256) {
             do erase();
@@ -150,7 +156,7 @@ class Tower {
         return;
     }
 
-    /** Moves left by 2 pixels. */
+    /** Moves left by 1 square. */
     method void moveLeft() {
         if ((x + size) > 1) {
             do erase();
@@ -160,7 +166,7 @@ class Tower {
         return;
     }
 
-    /** Moves right by 2 pixels. */
+    /** Moves right by 1 square. */
     method void moveRight() {
         if ((x + size + size) < 512) {
             do erase();
@@ -168,5 +174,61 @@ class Tower {
             do draw();
         }
         return;
+    }
+    
+    /** Getter for X */
+    method int getX() {
+        return x;
+    }
+    
+    /** Getter for Y */
+    method int getY() {
+        return y;
+    }
+    
+    /** Getter for Crd */
+    method Coordinate getCrd() {
+        var Coordinate myCrd;
+        let myCrd = Coordinate.new(x, y);
+        return myCrd;
+    }
+    
+    /** Compares 2 Coordinates */
+    method boolean equals(Coordinate inCrd) {
+        return inCrd.equals(getCrd());
+    }
+    
+    /** Getter for range */
+    method int getRange() {
+        return range;
+    }
+
+
+    /**
+     *   SPECIAL FUNCTIONS
+     */
+    
+    /** Getter for damage */
+    method int getDamage() {
+        return damage;
+    }
+    
+    /** Recursive Attack */
+    method int attack(Enemy inEnemy) {
+        var int winState;  // 0: enemy wins, 1: towers win, 2: game on
+        
+        // do Output.printString("Twr:");
+        // do Output.printInt(name);     
+        // do Output.printString(" ");   
+        let winState = inEnemy.attack(getCrd(), range, damage);
+        
+        if (~(next = null)) {
+            let winState = Math.max(next.attack(inEnemy),winState);
+        }
+        
+        // do Output.printString("wS:");
+        // do Output.printInt(winState);     
+        // do Output.printString(" ");  
+        return winState;
     }
 }

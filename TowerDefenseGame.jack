@@ -24,10 +24,10 @@
 class TowerDefenseGame {
 
     // The Towers
-    field Array towerArray;
+    field Tower rootTower;
 
     // The Enemies
-    field Array enemyArray;
+    field Enemy rootEnemy;
 
     // The difficulty 
     field int difficulty;  // 0=easiest
@@ -35,28 +35,50 @@ class TowerDefenseGame {
     // Board Square size
     field int brdSqr;
     
+    // Board entrance and exit
+    field Coordinate entrance, exit, center;
+    
     /** Construct a new TowerDefense Game **/
     constructor TowerDefenseGame new() {
         
         let brdSqr = 512 / 32;
-        let difficulty = 1;
-        
-        let towerArray = Array.new(difficulty);
-        let enemyArray = Array.new(difficulty);
-        
-        let enemyArray[0] = Enemy.new(0, brdSqr*8, brdSqr);
-        let towerArray[0] = Tower.new(0, brdSqr*7, brdSqr);
+        let difficulty = 0;
+        let entrance = Coordinate.new(brdSqr*0, brdSqr*8);
+        let exit = Coordinate.new(brdSqr*30, brdSqr*8);
+        let center = Coordinate.new(brdSqr*16, brdSqr*8);
+        let rootTower = null;
+        let rootEnemy = null;
         
         return this;
     }
 
     /** Deallocates the object's memory. */
     method void dispose() {
-        
-        do enemyArray.dispose();
-        do towerArray.dispose();
+        if (~(rootTower = null)){
+            do rootTower.dispose();
+        }
+        if (~(rootEnemy = null)){
+            do rootEnemy.dispose();
+        }
         
         do Memory.deAlloc(this);
+        return;
+    }
+    
+    /** Redraw the board to ensure items are cleanly displayed */
+    method void reDraw() {
+        // Clear the screen
+        do Screen.clearScreen(); 
+        
+        // Draw all towers 
+        if (~(rootTower = null)){
+            do rootTower.rDraw();
+        }
+        
+        // Draw all enemy 
+        if (~(rootEnemy = null)){
+            do rootEnemy.rDraw();
+        }
         return;
     }
 
@@ -65,70 +87,134 @@ class TowerDefenseGame {
     method void run() {
         var char key;
         var boolean exit;
+        var int roundNum;
+        var int winState; // 0: enemy wins, 1: towers win, 2: game on
 
         let exit = false;
+        let winState = 2;
+        let roundNum = 0;
+        
+        do newRound();
 
         while (~exit) {
             // waits for a key to be pressed.
-            while (key = 0) {
+            while ((key = 0) & (winState = 2)) {
                 let key = Keyboard.keyPressed();
-                do gameRound();
+                let winState = gameRound(roundNum);
+                let roundNum = roundNum + 1;
             }
 
             if (key = 81) {
                 let exit = true;
             }
             
-            /**
-            if (key = 90) {
-                do square.decSize();
+            if (winState = 0) { 
+                let exit = true;
             }
-            if (key = 88) {
-                do square.incSize();
+            
+            if (winState = 1) { 
+                let rootEnemy = null;
+                do run();
+                let exit = true;
             }
+
+        }
+            
+        return;
+    }
+    
+    
+    /** Builds a new round */
+    method void newRound() {
+        var Tower newTower;
+        let difficulty = difficulty + 1;
+            
+        // Build a new tower
+        let newTower = Tower.new(center, brdSqr, 20, brdSqr*3);
+        
+        // Put it in the linked list of towers
+        if (rootTower = null){
+            let rootTower = newTower;
+        } else {
+            do rootTower.insert(newTower);
+        }
+        // Place the new tower
+        do placeTower(newTower);
+    
+        return;
+    }
+    
+    /** Move a tower and set it in place */
+    method void placeTower(Tower newTower) {
+        var char key;
+        var boolean place;
+
+        let place = false;
+
+        while (~place) {
+            // waits for a key to be pressed.
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+
+            // Enter key
+            if (key = 128) {
+                let place = true;
+            }
+            
+            // Up
             if (key = 131) {
-                let direction = 1;
+                do newTower.moveUp();
             }
-            if (key = 133) {
-                let direction = 2;
+            // Down
+            if (key = 133) { 
+                do newTower.moveDown();
             }
-            if (key = 130) {
-                let direction = 3;
+            // Left
+            if (key = 130) { 
+                do newTower.moveLeft();
             }
-            if (key = 132) {
-                let direction = 4;
+            // Right
+            if (key = 132) { 
+                do newTower.moveRight();
             }
-            **/
+            
 
             // waits for the key to be released.
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
-                do gameRound();
+                do reDraw();
             }
         }
             
         return;
-	}
+    }
 
-    /** Moves the square by 2 pixels in the current direction. */
-    method void gameRound() {
-        /** if (direction = 1) {
-            do square.moveUp();
+    /** Play 1 round within a game */
+    method int gameRound(int roundNum) {
+        var int winState; // 0: enemy wins, 1: towers win, 2: game on
+        var Enemy newEnemy;
+        let winState = 2;
+        
+        // Add new enemy at entrance
+        if (roundNum < difficulty) { 
+            let newEnemy = Enemy.new(entrance, brdSqr, 100);
+            if (~(rootEnemy = null)) {
+                do rootEnemy.insert(newEnemy);
+            } else { 
+                let rootEnemy = newEnemy;
+            }
         }
-        if (direction = 2) {
-            do square.moveDown();
-        }
-        if (direction = 3) {
-            do square.moveLeft();
-        }
-        if (direction = 4) {
-            do square.moveRight();
-        } **/
-        var Enemy tempEnemy;
-        let tempEnemy = enemyArray[0];
-        do tempEnemy.moveRight();
+        
+        // Move the enemy
+        let winState = Math.min(rootEnemy.move(exit),winState);
+        
+        // Shoot the enemy
+        let winState = Math.min(rootTower.attack(rootEnemy),winState);
+        
+        do reDraw();
 
         do Sys.wait(200); // Delays the next movement.
-        return;
+        return winState;
     }
 }

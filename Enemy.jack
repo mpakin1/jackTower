@@ -17,22 +17,42 @@
  */
 class Enemy {
 
+    // Next and previous enemies in linked list
+    field Enemy next, prev;
+
     // Location on the screen
     field int x, y;
 
     // The radius of the enemy
     field int radius, size;
 
+    // The health of the enemy
+    field int health;
+    
+    // Enemy name
+    field int name;
+
     /** Constructs a new enemy with a given location and radius. */
-    constructor Enemy new(int Ax, int Ay, int Asize) {
-        let x = Ax;
-        let y = Ay;
-        let radius = Asize/2;
-        let size = Asize;
+    constructor Enemy new(Coordinate inCrd, int inSize, int inHealth) {
+        let x = inCrd.getX();
+        let y = inCrd.getY();
+        let radius = inSize/2;
+        let size = inSize;
+        let health = inHealth;
+        let name = 0;
 
         do draw();
 
         return this;
+    }
+
+    /** Deallocates the object's memory. */
+    method void rDispose() {
+        if (~(next = null)) {
+            do next.dispose();
+        }
+        do Memory.deAlloc(this);
+        return;
     }
 
     /** Deallocates the object's memory. */
@@ -41,20 +61,20 @@ class Enemy {
         return;
     }
 
+    /** Recursively draws all the enemy on the screen. */
+    method void rDraw() {
+        if (~(next = null)){
+            do next.rDraw();
+        }
+        do Screen.setColor(true);
+        do Screen.drawCircle(x + radius, y + radius, radius);
+        return;
+    }
+
     /** Draws the enemy on the screen. */
     method void draw() {
         do Screen.setColor(true);
         do Screen.drawCircle(x + radius, y + radius, radius);
-        
-        
-        
-        do Output.printString("x:");
-        do Output.printInt(x + radius);
-        do Output.printString("y:");
-        do Output.printInt(y + radius);
-        do Output.printString("r:");
-        do Output.printInt(radius);
-        do Output.println();
         return;
     }
 
@@ -64,28 +84,141 @@ class Enemy {
         do Screen.drawCircle(x + radius, y + radius, radius);
         return;
     }
+    
+    /** Getter for Radius */
+    method int getRadius() {
+        return radius;
+    }
+    
+    /** Getter for Size */
+    method int getSize() {
+        return size;
+    }
+    
+    /** Getter for Name */
+    method int getName() {
+        return name;
+    }
+    
+    /** Setter for Name */
+    method void setName(int inName) {
+        let name = inName;
+        return;
+    }
 
-    // /** Increments the radius by 2 pixels. */
-    // method void incSize() {
-    //    if (((y + radius) < 254) & ((x + radius) < 510)) {
-    //        do erase();
-    //        let radius = radius + 2;
-    //        do draw();
-    //    }
-    //    return;
-    // }
 
-    // /** Decrements the radius by 2 pixels. */
-    // method void decSize() {
-    //    if (radius > 2) {
-    //        do erase();
-    //        let radius = radius - 2;
-    //        do draw();
-    //    }
-    //    return;
-	// }
+    /**
+     *   LINKED LIST FUNCTIONS
+     */
+    
+    /** Recursive Insert */
+    method void insert(Enemy inEnemy) {
+        if (next = null) { 
+            let next = inEnemy;
+            do next.setName(name+1);
+            do next.setPrev(this);
+        } else { 
+            do next.insert(inEnemy);
+        }
+        return;
+    }
+    
+    /** Pop */
+    method int pop() {
+        var Enemy oNext, oPrev;
+        var int winState; // 0: enemy wins, 1: towers win, 2: game on
+        let winState = 2;
+        let oNext = next;
+        let oPrev = prev;
+        
+        if (~(next = null)) { 
+            let x = next.getX();
+            let y = next.getY();
+            let name = next.getName();
+            do next.setName(99);
+            let radius = next.getRadius();
+            let size = next.getSize();
+            let health = next.getHealth();
+            let next = next.getNext();
+            // do oNext.dispose();
+            let winState = 2;
+        } else {
+            if (~(prev = null)) { 
+                let x = prev.getX();
+                let y = prev.getY();
+                let name = prev.getName();
+                do prev.setName(99);
+                let radius = prev.getRadius();
+                let size = prev.getSize();
+                let health = prev.getHealth();
+                let prev = prev.getPrev();
+                // do oPrev.dispose();
+                let winState = 2;
+            } else {
+                let winState = 1;
+                do setName(99);
+            }
+        }
+        return winState;
+    }
+    
+    /** Setter for next */
+    method void setNext(Enemy inNext) {
+        let next = inNext;
+        return;
+    }
+    
+    /** Setter for prev */
+    method void setPrev(Enemy inPrev) {
+        let prev = inPrev;
+        return;
+    }
+    
+    /** Getter for next */
+    method Enemy getNext() {
+        return next;
+    }
+    
+    /** Getter for prev */
+    method Enemy getPrev() {
+        return prev;
+    }
 
-    /** Moves up by 2 pixels. */
+
+    /**
+     *   POSITION FUNCTIONS
+     */
+
+    /** Calls correct move direction based on moveLogic */
+    method int move(Coordinate exit) {  // ****** When moveLogic is done, add in its call here. ****
+        var int winState; // 0: enemy wins, 1: towers win, 2: game on
+        let winState = 2;
+        
+        // Recursively call move on linked list
+        if (~(next = null)){
+            let winState = next.move(exit);
+        }
+        
+        // Move thyself
+        do moveRight();
+        /** do Output.printString("(");
+        do Output.printInt(x);
+        do Output.printString(",");
+        do Output.printInt(y);
+        do Output.printString("|");
+        do Output.printInt(exit.getX());
+        do Output.printString(",");
+        do Output.printInt(exit.getY());
+        do Output.printString(")"); */
+        
+        // Does this enemy win?
+        if (exit.equals(getCrd())) { 
+            let winState = 0;
+        }
+        return winState;
+    }
+
+    /** Moves up by 1 square. */
     method void moveUp() {
         if (y > size) {
             do erase();
@@ -95,7 +228,7 @@ class Enemy {
         return;
     }
 
-    /** Moves down by 2 pixels. */
+    /** Moves down by 1 square. */
     method void moveDown() {
         if ((y + size + size) < 256) {
             do erase();
@@ -105,7 +238,7 @@ class Enemy {
         return;
     }
 
-    /** Moves left by 2 pixels. */
+    /** Moves left by 1 square. */
     method void moveLeft() {
         if (x > size) {
             do erase();
@@ -123,5 +256,86 @@ class Enemy {
             do draw();
         }
         return;
+    }
+    
+    /** Getter for X */
+    method int getX() {
+        return x;
+    }
+    
+    /** Getter for Y */
+    method int getY() {
+        return y;
+    }
+    
+    /** Getter for Coord */
+    method Coordinate getCrd() {
+        var Coordinate myCrd;
+        let myCrd = Coordinate.new(x, y);
+        return myCrd;
+    }
+    
+    /** Compares 2 Coordinates */
+    method boolean equals(Coordinate inCrd) {
+        return inCrd.equals(getCrd());
+    }
+    
+    /** Compares 2 Coordinates' distance from each other */
+    method boolean inRange(Coordinate inCrd, int range) {
+        var int dX, dY, distance;
+        let dX = Math.abs((inCrd.getX()-x))/size;
+        let dY = Math.abs((inCrd.getY()-y))/size;
+        let distance = Math.sqrt(Math.multiply(dX,dX)+Math.multiply(dY,dY));
+        return (distance < (range/size));
+    }
+
+
+    /**
+     *   SPECIAL FUNCTIONS
+     */
+    
+    /** Getter for health */
+    method int getHealth() {
+        return health;
+    }
+    
+    /** Recursive Attack */
+    method int attack(Coordinate towerCrd, int range, int damage) {
+        var int winState; // 0: enemy wins, 1: towers win, 2: game on
+        let winState = 2;
+        
+        // Am I in range of tower?
+        if (inRange(towerCrd, range)) {
+        
+            /** do Output.printString("(");
+            do Output.printInt(x);
+            do Output.printString(",");
+            do Output.printInt(y);
+            do Output.printString(") Atk'd:");
+            do Output.printInt(name);
+            do Output.printString(",hlth:"); */
+            
+            // Receive damage
+            let health = health - damage; 
+            
+            // do Output.printInt(health);
+            
+            // Evaluate damage to self
+            if (health < 1) { 
+                
+                // do Output.printString(", dead. Win?");
+                let winState = pop(); 
+                
+                // do Output.printInt(winState);
+            }
+            
+            // do Output.println();
+        } else {
+            // Recursively hand the attack to next enemy
+            if (~(next = null)) {
+                let winState = next.attack(towerCrd, range, damage);
+            }
+        }
+        return winState;
     }
 }
