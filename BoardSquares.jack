@@ -16,4 +16,154 @@
  */
 class BoardSquares {
 
+	field Array boardSquareArray;
+	field int max;
+	field int xMax;
+	field int yMax;
+	
+	constructor BoardSquares new(int xColumnIn, int yRowIn) {
+		var int xIterator;
+		var int yIterator;
+		var int currentPos;
+				
+		let max = xColumnIn * yRowIn;
+		let xMax = xColumnIn;
+		let yMax = yRowIn;
+		let boardSquareArray = Array.new(max);
+		let xIterator = xColumnIn;
+		let yIterator = yRowIn;
+		
+		while (yIterator > 0) {
+			while (xIterator > 0) {
+				let currentPos = (((yIterator - 1) * xColumnIn) + xIterator);
+				let boardSquareArray[currentPos-1] = newSquare(xIterator, yIterator);
+				let xIterator = xIterator - 1;
+				}
+			let xIterator = xColumnIn;
+			let yIterator = yIterator - 1;
+			}
+		return this;		
+	}
+	
+	method Array newSquare(int xColumnIn, int yRowIn) {
+		var int xColumn;
+		var int yRow;
+		var boolean blocked;
+		var int squareValue;
+		var boolean changedAlready;
+		var int name;
+		var int i;
+		
+		var Array blankArray;
+		
+		let blankArray = Array.new(6);
+		let xColumn = xColumnIn;
+		let yRow = yRowIn;
+		let blocked = false;
+		let squareValue = 0;
+		let changedAlready = false;
+		let name = (yRowIn * xColumnIn); //This needs to be updated to the pos function once built
+		
+		let blankArray[0] = xColumn;
+		let blankArray[1] = yRow;
+		let blankArray[2] = blocked;
+		let blankArray[3] = squareValue;
+		let blankArray[4] = changedAlready;
+		let blankArray[5] = name;
+	
+		return blankArray;
+		
+	}	
+	
+	method void changeCount(int indexRc, int newCount){ //In case you need to manually change a square's count value.
+		var Array temporaryRc;
+		let temporaryRc = boardSquareArray[indexRc];
+		let temporaryRc[3] = newCount;
+		let boardSquareArray[indexRc] = temporaryRc;
+		do Array.dispose(temporaryRc);
+		return;
+	}
+	
+	method void changeChecked(int indexCc, boolean newChecked){ //In case you need to manually mark a square 'checked' to keep route values from calculating it.
+		var Array temporaryCc;
+		let temporaryCc = boardSquareArray[indexCc];
+		let temporaryCc[3] = newChecked;
+		let boardSquareArray[indexCc] = temporaryCc;
+		do Array.dispose(temporaryCc);
+		return;
+	}
+	
+	method void changeBlocked(int indexCb, boolean newBlocked){  //Pass an index (pos - 1) and true in order to set this square to blocked.
+		var Array temporaryCb;
+		let temporaryCb = boardSquareArray[indexCb];
+		let temporaryCb[2] = newBlocked;
+		let temporaryCb[3] = 99;
+		let boardSquareArray[indexCb] = temporaryCb;
+		do Array.dispose(temporaryCb);
+		return;
+	}
+	
+	method void resetBoardCount (){  //Invoke this to reset all counts on the board.
+		var int indexRbC;
+		var Array currentSquare;
+		let indexRbC = 0;
+		while (indexRbC < max){
+			let currentSquare = boardSquareArray[indexRbC];
+			let currentSquare[3] = 0;
+			let currentSquare[4] = false;
+			let boardSquareArray[indexRbC] = currentSquare;
+			let indexRbC = indexRbC + 1;
+			}
+		do Array.dispose(currentSquare);
+		return;
+	}
+	
+	//startX, startY are column, row reference for the square from the top left. Call with previousCount of 0.
+	
+	method void setRouteValues (int startX, int startY, int previousCount) {   
+		var int boardSquareIndex;
+		var array thisSquare;
+		let boardSquareIndex = ((((startY - 1) * xMax) + startX)-1);
+		if (boardSquareIndex < max) {
+			let thisSquare = boardSquareArray[boardSquareIndex];
+			if (thisSquare[4] = false) {
+				if (thisSquare[2] = false) {
+					let thisSquare[3] = previousCount + 1;
+					let thisSquare[4] = true;
+					let boardSquareArray[boardSquareIndex] = thisSquare;
+						if (startX - 1 > 0){
+							do setRouteValues (startX - 1, startY, previousCount + 1);
+							}
+						if ((startY + 1) < (yMax + 1)){
+							do setRouteValues (startX, startY + 1, previousCount + 1);
+							}
+						if ((startY - 1) > 0){
+							do setRouteValues (startX, startY - 1, previousCount + 1);
+							}
+						if ((startX + 1) < (xMax + 1)){
+							do setRouteValues (startX + 1, startY, previousCount + 1);
+							}
+					}
+				else {			
+					let thisSquare[3] = 99;
+					let thisSquare[4] = true;
+					}
+				
+				}
+			}
+		//Tried doing memory disposal here, but it screwed with the recursion.  So I took it out.
+		return;
+	}
+	
+	method void printSquare (int printIndex) {
+		var Array squareToPrint;
+		let squareToPrint = boardSquareArray[printIndex];
+		do Output.printString(" Looking at square: ");
+		do Output.printInt(printIndex+1);
+		do Output.printString(" Value assigned is: ");
+		do Output.printInt(squareToPrint[3]);
+		do Array.dispose(squareToPrint);
+		return;
+	}
+}
     
