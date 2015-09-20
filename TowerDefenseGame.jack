@@ -44,8 +44,8 @@ class TowerDefenseGame {
         let towerArray = Array.new(difficulty);
         let enemyArray = Array.new(difficulty);
         
-        let enemyArray[0] = Enemy.new(1, brdSqr*8, brdSqr);
-        let towerArray[0] = Tower.new(1, brdSqr*7, brdSqr);
+        let enemyArray[0] = Enemy.new(0, brdSqr*8, brdSqr);
+        let towerArray[0] = Tower.new(0, brdSqr*7, brdSqr);
         
         return this;
     }
@@ -53,14 +53,7 @@ class TowerDefenseGame {
     /** Deallocates the object's memory. */
     method void dispose() {
         
-        //var Enemy tempEnemy;
-        //let tempEnemy = enemyArray[0];
-        //do tempEnemy.dispose();
         do enemyArray.dispose();
-        
-        //var Tower tempTower;
-        //let tempTower = towerArray[0];
-        //do tempTower.dispose();
         do towerArray.dispose();
         
         do Memory.deAlloc(this);
@@ -135,7 +128,7 @@ class TowerDefenseGame {
         let tempEnemy = enemyArray[0];
         do tempEnemy.moveRight();
 
-        do Sys.wait(5); // Delays the next movement.
+        do Sys.wait(200); // Delays the next movement.
         return;
     }
 }
