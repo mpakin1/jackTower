@@ -87,7 +87,7 @@ class Enemy {
 
     /** Moves up by 2 pixels. */
     method void moveUp() {
-        if (y > radius) {
+        if (y > size) {
             do erase();
             let y = y - size;
             do draw();
@@ -97,7 +97,7 @@ class Enemy {
 
     /** Moves down by 2 pixels. */
     method void moveDown() {
-        if ((y + size) < 254) {
+        if ((y + size + size) < 256) {
             do erase();
             let y = y + size;
             do draw();
@@ -107,7 +107,7 @@ class Enemy {
 
     /** Moves left by 2 pixels. */
     method void moveLeft() {
-        if (x > radius) {
+        if (x > size) {
             do erase();
             let x = x - size;
             do draw();
@@ -117,7 +117,7 @@ class Enemy {
 
     /** Moves right by 1 square. */
     method void moveRight() {
-        if ((x + size) < 510) {
+        if ((x + size + size) < 512) {
             do erase();
             let x = x + size;
             do draw();
