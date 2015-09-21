@@ -157,6 +157,50 @@ class BoardSquares {
 		return;
 	}
 	
+	method int findNextSquare (int currentX, int currentY) {  //This function finds the value of the lowest adjacent square and returns the INDEX of that square in boardSquareArray.
+		var int currentMax;
+		var int indexToReturn;
+		var int currentIndex;
+		var array squareToCheck;
+		let currentMax = 90;
+		let currentIndex = ((((currentY - 1) * xMax) + currentX)-1);
+		if (currentIndex < max) {
+			if (currentX - 1 > 0){
+				let currentIndex = ((((currentY - 1) * xMax) + (currentX - 1))-1);
+				let squareToCheck = boardSquareArray[currentIndex];
+				if (squareToCheck[3] < currentMax){
+					let currentMax = squareToCheck[3];
+					let indexToReturn = currentIndex;
+					}
+				}
+			if ((currentY + 1) < (yMax + 1)){
+				let currentIndex = ((((currentY) * xMax) + (currentX))-1);
+				let squareToCheck = boardSquareArray[currentIndex];
+				if (squareToCheck[3] < currentMax){
+					let currentMax = squareToCheck[3];
+					let indexToReturn = currentIndex;
+					}
+				}
+			if ((currentY - 1) > 0){
+				let currentIndex = ((((currentY - 2) * xMax) + (currentX))-1);
+				let squareToCheck = boardSquareArray[currentIndex];
+				if (squareToCheck[3] < currentMax){
+					let currentMax = squareToCheck[3];
+					let indexToReturn = currentIndex;
+					}
+				}
+			if ((currentY + 1) < (xMax + 1)){
+				let currentIndex = ((((currentY - 1) * xMax) + (currentX + 1))-1);
+				let squareToCheck = boardSquareArray[currentIndex];
+				if (squareToCheck[3] < currentMax){
+					let currentMax = squareToCheck[3];
+					let indexToReturn = currentIndex;
+					}
+				}
+			}
+		return indexToReturn;
+	}
+	
 	method void printSquare (int printIndex) {
 		var Array squareToPrint;
 		let squareToPrint = boardSquareArray[printIndex];

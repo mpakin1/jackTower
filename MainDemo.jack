@@ -19,6 +19,7 @@ class Main {
     function void main() {
     
 		var BoardSquares board;
+		var int testNextSquare;
 
         let board = BoardSquares.new(5,5);
         do board.resetBoardCount();
@@ -35,6 +36,19 @@ class Main {
 		do board.printSquare(23);
 		do board.printSquare(0);
 		do board.printSquare(20);
+		
+		let testNextSquare = board.findNextSquare(2,4);
+		do Output.printString("Here's a test of nextSquare:");
+		do Output.printInt(testNextSquare);
+		
+		let testNextSquare = board.findNextSquare(3,1);
+		do Output.printString("Here's a test of nextSquare:");
+		do Output.printInt(testNextSquare);
+			
+		let testNextSquare = board.findNextSquare(5,5);
+		do Output.printString("Here's a test of nextSquare:");
+		do Output.printInt(testNextSquare);
+		
         return;
     }
 }
