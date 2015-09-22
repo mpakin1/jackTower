@@ -120,9 +120,11 @@ class BoardSquares {
 	
 	//startX, startY are column, row reference for the square from the top left. Call with previousCount of 0.
 	
-	method void setRouteValues (int startX, int startY, int previousCount) {   
-		var int boardSquareIndex;
+	method void setRouteValues (Coordinates start, int previousCount) {   
+		var int boardSquareIndex, startX, startY;
 		var array thisSquare;
+		let startX = start.getX();
+		let startY = start.getY();
 		let boardSquareIndex = ((((startY - 1) * xMax) + startX)-1);
 		if (boardSquareIndex < max) {
 			let thisSquare = boardSquareArray[boardSquareIndex];
@@ -132,16 +134,16 @@ class BoardSquares {
 					let thisSquare[4] = true;
 					let boardSquareArray[boardSquareIndex] = thisSquare;
 						if (startX - 1 > 0){
-							do setRouteValues (startX - 1, startY, previousCount + 1);
+							do setRouteValues (Coordinates.new(startX - 1, startY), previousCount + 1);
 							}
 						if ((startY + 1) < (yMax + 1)){
-							do setRouteValues (startX, startY + 1, previousCount + 1);
+							do setRouteValues (Coordinates.new(startX, startY + 1), previousCount + 1);
 							}
 						if ((startY - 1) > 0){
-							do setRouteValues (startX, startY - 1, previousCount + 1);
+							do setRouteValues (Coordinates.new(startX, startY - 1), previousCount + 1);
 							}
 						if ((startX + 1) < (xMax + 1)){
-							do setRouteValues (startX + 1, startY, previousCount + 1);
+							do setRouteValues (Coordinates.new(startX + 1, startY), previousCount + 1);
 							}
 					}
 				else {			
