@@ -1,0 +1,54 @@
+// -------------------------------------------------------------------------------
+// Project     : CS2000, TowerDefense Project
+// File Name   : Main.jack
+// Class       : CS2020, AY16-Q1
+// Date        : 9/9/2015
+// Author      : Micah Akin and Paul Haagenson
+// Version     : v1.0
+// Environment : TextWrangler 4.5.12 (3398)
+// Copyright   : This work was done by employees of the U.S. Government
+//               and is in the public domain.
+// -------------------------------------------------------------------------------
+
+/**
+ * The Main class initializes a new game.
+ */
+class Main {
+
+    /** Initializes the game board. */    
+    function void main() {
+    
+		var BoardSquares board;
+		var int testNextSquare;
+
+        let board = BoardSquares.new(5,5);
+        do board.resetBoardCount();
+		do board.changeBlocked(8,true);
+		do board.changeBlocked(13,true);
+		do board.changeBlocked(18,true);
+		do board.changeBlocked(22,true);
+		do board.changeBlocked(1,true);
+		do board.changeBlocked(6,true);
+		do board.changeBlocked(11,true);
+		
+		do board.setRouteValues(5,3,0);
+		
+		do board.printSquare(23);
+		do board.printSquare(0);
+		do board.printSquare(20);
+		
+		let testNextSquare = board.findNextSquare(2,4);
+		do Output.printString("Here's a test of nextSquare:");
+		do Output.printInt(testNextSquare);
+		
+		let testNextSquare = board.findNextSquare(3,1);
+		do Output.printString("Here's a test of nextSquare:");
+		do Output.printInt(testNextSquare);
+			
+		let testNextSquare = board.findNextSquare(5,5);
+		do Output.printString("Here's a test of nextSquare:");
+		do Output.printInt(testNextSquare);
+		
+        return;
+    }
+}
