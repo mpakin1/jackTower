@@ -207,10 +207,6 @@ class Enemy {
         // Move thyself
         let direction = moveLogic.nextMove(getCrd());
         
-        do Output.printString("dir:");
-        do Output.printInt(direction);
-        do Output.printString(", ");
-        
 	    // 0:Stop, 1:Up, 2: Right, 3: Down, 4: Left
         if(direction = 1){
             do moveUp();
