@@ -29,6 +29,9 @@ class TowerDefenseGame {
     // The Enemies
     field Enemy rootEnemy;
 
+    // The MoveLogic
+    field MoveLogic moveLogic;
+
     // The difficulty 
     field int difficulty;  // 0=easiest
     
@@ -41,11 +44,13 @@ class TowerDefenseGame {
     /** Construct a new TowerDefense Game **/
     constructor TowerDefenseGame new() {
         
-        let brdSqr = 512 / 32;
+        let brdSqr = 512 / 16;
         let difficulty = 0;
-        let entrance = Coordinate.new(brdSqr*0, brdSqr*8);
-        let exit = Coordinate.new(brdSqr*30, brdSqr*8);
-        let center = Coordinate.new(brdSqr*16, brdSqr*8);
+        let moveLogic = MoveLogic.new(512/brdSqr, 256/brdSqr);
+        let entrance = Coordinate.new(brdSqr*0, brdSqr*4);
+        let exit = Coordinate.new(brdSqr*14, brdSqr*4);
+        let center = Coordinate.new(brdSqr*8, brdSqr*4);
+        do moveLogic.resetRouteTo(exit);
         let rootTower = null;
         let rootEnemy = null;
         
@@ -68,7 +73,7 @@ class TowerDefenseGame {
     /** Redraw the board to ensure items are cleanly displayed */
     method void reDraw() {
         // Clear the screen
-        do Screen.clearScreen(); 
+        do Screen.clearScreen();
         
         // Draw all towers 
         if (~(rootTower = null)){
@@ -116,6 +121,10 @@ class TowerDefenseGame {
                 let rootEnemy = null;
                 do run();
                 let exit = true;
+                           
+               do Output.moveCursor(0,0);
+             //do Output.printString(".                                v                             .");
+               do Output.printString("                      )-:  The enemy won  :-(                   ");
             }
 
         }
@@ -127,6 +136,7 @@ class TowerDefenseGame {
     /** Builds a new round */
     method void newRound() {
         var Tower newTower;
+        var Coordinate newTowerCrd;
         let difficulty = difficulty + 1;
             
         // Build a new tower
@@ -140,6 +150,11 @@ class TowerDefenseGame {
         }
         // Place the new tower
         do placeTower(newTower);
+        let newTowerCrd = newTower.getCrd();
+        
+        // Update the route logic
+        do moveLogic.changeBlocked(newTowerCrd, true);
+        do moveLogic.resetRouteTo(exit);
     
         return;
     }
@@ -150,6 +165,13 @@ class TowerDefenseGame {
         var boolean place;
 
         let place = false;
+        
+        do reDraw();           
+        do Output.moveCursor(0,0);
+      //do Output.printString(".                                                              .");
+        do Output.printString("                Please place a new tower (square)!              ");
+        do Output.printString("           use the arrow keys to move it into position          ");
+        do Output.printString("            Hit the enter key to confirm its location           ");
 
         while (~place) {
             // waits for a key to be pressed.
@@ -183,7 +205,8 @@ class TowerDefenseGame {
             // waits for the key to be released.
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
-                do reDraw();
+                do reDraw();        
+                
             }
         }
             
@@ -198,14 +221,14 @@ class TowerDefenseGame {
         
         // Add new enemy at entrance
         if (roundNum < difficulty) { 
-            let newEnemy = Enemy.new(entrance, brdSqr, 100);
+            let newEnemy = Enemy.new(entrance, moveLogic, brdSqr, 100);
             if (~(rootEnemy = null)) {
                 do rootEnemy.insert(newEnemy);
             } else { 
                 let rootEnemy = newEnemy;
             }
         }
-        
+
         // Move the enemy
         let winState = Math.min(rootEnemy.move(exit),winState);
         

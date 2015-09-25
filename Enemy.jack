@@ -32,8 +32,12 @@ class Enemy {
     // Enemy name
     field int name;
 
+    // The MoveLogic
+    field MoveLogic moveLogic;
+
     /** Constructs a new enemy with a given location and radius. */
-    constructor Enemy new(Coordinate inCrd, int inSize, int inHealth) {
+    constructor Enemy new(Coordinate inCrd, MoveLogic inLogic, int inSize, int inHealth) {
+        let moveLogic = inLogic;
         let x = inCrd.getX();
         let y = inCrd.getY();
         let radius = inSize/2;
@@ -192,6 +196,7 @@ class Enemy {
     /** Calls correct move direction based on moveLogic */
     method int move(Coordinate exit) {  // ****** When moveLogic is done, add in its call here. ****
         var int winState; // 0: enemy wins, 1: towers win, 2: game on
+        var int direction;
         let winState = 2;
         
         // Recursively call move on linked list
@@ -200,16 +205,25 @@ class Enemy {
         }
         
         // Move thyself
-        do moveRight();
-        /** do Output.printString("(");
-        do Output.printInt(x);
-        do Output.printString(",");
-        do Output.printInt(y);
-        do Output.printString("|");
-        do Output.printInt(exit.getX());
-        do Output.printString(",");
-        do Output.printInt(exit.getY());
-        do Output.printString(")"); */
+        let direction = moveLogic.nextMove(getCrd());
+        
+        do Output.printString("dir:");
+        do Output.printInt(direction);
+        do Output.printString(", ");
+        
+	    // 0:Stop, 1:Up, 2: Right, 3: Down, 4: Left
+        if(direction = 1){
+            do moveUp();
+        } 
+        if(direction = 2){
+            do moveRight();
+        } 
+        if(direction = 3){
+            do moveDown();
+        } 
+        if(direction = 4){
+            do moveLeft();
+        } 
         
         // Does this enemy win?
         if (exit.equals(getCrd())) { 

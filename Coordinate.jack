@@ -49,5 +49,10 @@ class Coordinate {
     method int getY() {
         return y;
     }
+    
+    /** Get output x/y in an index value usable for moveLogic */
+    method int getIndex(int sqrSize) {
+        return ((y * (512/sqrSize)) + x);
+    }
 
 }
